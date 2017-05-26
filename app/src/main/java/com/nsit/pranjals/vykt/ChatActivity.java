@@ -18,6 +18,7 @@ package com.nsit.pranjals.vykt;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -68,6 +69,69 @@ import java.util.concurrent.TimeUnit;
 import hugo.weaving.DebugLog;
 
 public class ChatActivity extends AppCompatActivity {
+
+    //==============================================================================================
+    // PERMISSIONS AND RELATED STUFF!
+    //==============================================================================================
+
+    private static String[] PERMISSIONS_REQ = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+    };
+
+    private static final int REQUEST_CODE_PERMISSION = 2;
+
+    // Function with code to verify permissions for camera and storage in a go!
+    private static boolean verifyPermissions(Activity activity) {
+        // Check if we have write permission
+        int write_permission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int read_permission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int camera_permission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.CAMERA);
+
+        if (    write_permission != PackageManager.PERMISSION_GRANTED
+                || read_permission != PackageManager.PERMISSION_GRANTED
+                || camera_permission != PackageManager.PERMISSION_GRANTED ) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_REQ,
+                    REQUEST_CODE_PERMISSION
+            );
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // Handling result for overlay drawing permission.
+    private static int OVERLAY_PERMISSION_REQ_CODE = 1;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this.getApplicationContext())) {
+                    Toast.makeText(
+                            this,
+                            "CameraActivity SYSTEM_ALERT_WINDOW, permission not granted...",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                } else {
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
+            }
+        }
+    }
+
+    //==============================================================================================
+    // CAMERA STUFF!
+    //==============================================================================================
 
     // The camera preview's center square is the only region processed.
     // This dimension is the desired size in pixels.
@@ -155,18 +219,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
             };
 
-    // An additional thread for running tasks that shouldn't block the UI.
-    private HandlerThread backgroundThread;
-
-    // A Handler for running tasks in the background.
-    private Handler backgroundHandler;
-
-    // An additional thread for running inference so as not to block the camera.
-    private HandlerThread inferenceThread;
-
-    // Handler for running tasks in the background.
-    private Handler inferenceHandler;
-
     // An ImageReader that handles preview frame capture.
     private ImageReader previewReader;
 
@@ -179,125 +231,7 @@ public class ChatActivity extends AppCompatActivity {
     // A Semaphore to prevent the app from exiting before closing the camera.
     private final Semaphore cameraOpenCloseLock = new Semaphore(1);
 
-    // Shows a Toast on the UI thread.
-    private void showToast(final String text) {
-        this.runOnUiThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(ChatActivity.this, text, Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    /*
-     * Given choices of Sizes supported by a camera, chooses the smallest one whose
-     * width and height are at least as large as the respective requested values, and whose aspect
-     * ratio matches with the specified value.
-     *
-     * choices      The list of sizes that the camera supports for the intended output class
-     * width        The minimum desired width
-     * height       The minimum desired height
-     * aspectRatio  The aspect ratio
-     * return       The optimal {@code Size}, or an arbitrary one if none were big enough
-     */
-    @SuppressLint("LongLogTag")
-    @DebugLog
-    private static Size chooseOptimalSize(final Size[] choices) {
-        // Collect the supported resolutions that are at least as big as the preview Surface
-        final List<Size> bigEnough = new ArrayList<>();
-        for (final Size option : choices) {
-            if (option.getHeight() >= MINIMUM_PREVIEW_SIZE
-                    && option.getWidth() >= MINIMUM_PREVIEW_SIZE) {
-                Log.i(TAG, "Adding size: " + option.getWidth() + "x" + option.getHeight());
-                bigEnough.add(option);
-            } else {
-                Log.i(TAG, "Not adding size: " + option.getWidth() + "x" + option.getHeight());
-            }
-        }
-
-        // Pick the smallest of those, assuming we found any
-        if (bigEnough.size() > 0) {
-            final Size chosenSize = Collections.min(bigEnough, new CompareSizesByArea());
-            Log.i(TAG, "Chosen size: " + chosenSize.getWidth() + "x" + chosenSize.getHeight());
-            return chosenSize;
-        } else {
-            Log.e(TAG, "Couldn't find any suitable preview size");
-            return choices[0];
-        }
-    }
-
-    private static int OVERLAY_PERMISSION_REQ_CODE = 1;
-
-    @Override
-    protected void onCreate (Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        setContentView(R.layout.activity_chat);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this.getApplicationContext())) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{Manifest.permission.CAMERA},
-                        1
-                );
-            }
-        }
-        textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this.getApplicationContext())) {
-                    Toast.makeText(
-                            this,
-                            "CameraActivity SYSTEM_ALERT_WINDOW, permission not granted...",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                } else {
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        startBackgroundThread();
-        // When the screen is turned off and turned back on, the SurfaceTexture is already
-        // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
-        // a camera and start preview from here (otherwise, we wait until the surface is ready in
-        // the SurfaceTextureListener).
-        if (textureView.isAvailable()) {
-            openCamera(textureView.getWidth(), textureView.getHeight());
-        } else {
-            textureView.setSurfaceTextureListener(surfaceTextureListener);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        closeCamera();
-        stopBackgroundThread();
-        super.onPause();
-    }
+    private final OnGetImageListener mOnGetPreviewListener = new OnGetImageListener();
 
     /*
      * Sets up member variables related to camera.
@@ -442,38 +376,42 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    // Starts a background thread and its Handler.
-    @DebugLog
-    private void startBackgroundThread() {
-        backgroundThread = new HandlerThread("ImageListener");
-        backgroundThread.start();
-        backgroundHandler = new Handler(backgroundThread.getLooper());
-
-        inferenceThread = new HandlerThread("InferenceThread");
-        inferenceThread.start();
-        inferenceHandler = new Handler(inferenceThread.getLooper());
-    }
-
-    // Stops the background thread and its Handler.
+    /*
+     * Given choices of Sizes supported by a camera, chooses the smallest one whose
+     * width and height are at least as large as the respective requested values, and whose aspect
+     * ratio matches with the specified value.
+     *
+     * choices      The list of sizes that the camera supports for the intended output class
+     * width        The minimum desired width
+     * height       The minimum desired height
+     * aspectRatio  The aspect ratio
+     * return       The optimal {@code Size}, or an arbitrary one if none were big enough
+     */
     @SuppressLint("LongLogTag")
     @DebugLog
-    private void stopBackgroundThread() {
-        backgroundThread.quitSafely();
-        inferenceThread.quitSafely();
-        try {
-            backgroundThread.join();
-            backgroundThread = null;
-            backgroundHandler = null;
+    private static Size chooseOptimalSize(final Size[] choices) {
+        // Collect the supported resolutions that are at least as big as the preview Surface
+        final List<Size> bigEnough = new ArrayList<>();
+        for (final Size option : choices) {
+            if (option.getHeight() >= MINIMUM_PREVIEW_SIZE
+                    && option.getWidth() >= MINIMUM_PREVIEW_SIZE) {
+                Log.i(TAG, "Adding size: " + option.getWidth() + "x" + option.getHeight());
+                bigEnough.add(option);
+            } else {
+                Log.i(TAG, "Not adding size: " + option.getWidth() + "x" + option.getHeight());
+            }
+        }
 
-            inferenceThread.join();
-            inferenceThread = null;
-            inferenceThread = null;
-        } catch (final InterruptedException e) {
-            Log.e(TAG, "error" ,e );
+        // Pick the smallest of those, assuming we found any
+        if (bigEnough.size() > 0) {
+            final Size chosenSize = Collections.min(bigEnough, new CompareSizesByArea());
+            Log.i(TAG, "Chosen size: " + chosenSize.getWidth() + "x" + chosenSize.getHeight());
+            return chosenSize;
+        } else {
+            Log.e(TAG, "Couldn't find any suitable preview size");
+            return choices[0];
         }
     }
-
-    private final OnGetImageListener mOnGetPreviewListener = new OnGetImageListener();
 
     private final CameraCaptureSession.CaptureCallback captureCallback =
             new CameraCaptureSession.CaptureCallback() {
@@ -622,6 +560,111 @@ public class ChatActivity extends AppCompatActivity {
             return Long.signum(
                     (long) lhs.getWidth()*lhs.getHeight() - (long) rhs.getWidth()*rhs.getHeight()
             );
+        }
+    }
+
+    //==============================================================================================
+    // OTHER ACTIVITY-NECESSITIES!
+    //==============================================================================================
+
+    // Shows a Toast on the UI thread.
+    private void showToast(final String text) {
+        this.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ChatActivity.this, text, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // An additional thread for running tasks that shouldn't block the UI.
+    private HandlerThread backgroundThread;
+
+    // A Handler for running tasks in the background.
+    private Handler backgroundHandler;
+
+    // An additional thread for running inference so as not to block the camera.
+    private HandlerThread inferenceThread;
+
+    // Handler for running tasks in the background.
+    private Handler inferenceHandler;
+
+    @Override
+    protected void onCreate (Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setContentView(R.layout.activity_chat);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this.getApplicationContext())) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                verifyPermissions(this);
+            }
+        }
+        textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startBackgroundThread();
+        // When the screen is turned off and turned back on, the SurfaceTexture is already
+        // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
+        // a camera and start preview from here (otherwise, we wait until the surface is ready in
+        // the SurfaceTextureListener).
+        if (textureView.isAvailable()) {
+            openCamera(textureView.getWidth(), textureView.getHeight());
+        } else {
+            textureView.setSurfaceTextureListener(surfaceTextureListener);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        closeCamera();
+        stopBackgroundThread();
+        super.onPause();
+    }
+
+    // Starts a background thread and its Handler.
+    @DebugLog
+    private void startBackgroundThread() {
+        backgroundThread = new HandlerThread("ImageListener");
+        backgroundThread.start();
+        backgroundHandler = new Handler(backgroundThread.getLooper());
+
+        inferenceThread = new HandlerThread("InferenceThread");
+        inferenceThread.start();
+        inferenceHandler = new Handler(inferenceThread.getLooper());
+    }
+
+    // Stops the background thread and its Handler.
+    @SuppressLint("LongLogTag")
+    @DebugLog
+    private void stopBackgroundThread() {
+        backgroundThread.quitSafely();
+        inferenceThread.quitSafely();
+        try {
+            backgroundThread.join();
+            backgroundThread = null;
+            backgroundHandler = null;
+
+            inferenceThread.join();
+            inferenceThread = null;
+            inferenceThread = null;
+        } catch (final InterruptedException e) {
+            Log.e(TAG, "error" ,e );
         }
     }
 

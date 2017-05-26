@@ -200,7 +200,6 @@ public class OnGetImageListener implements OnImageAvailableListener {
                 for (int i = 0; i < planes.length; ++i) {
                     mYUVBytes[i] = new byte[planes[i].getBuffer().capacity()];
                 }
-                Log.v("test27", "preview size " + mPreviewWidth + " x " + mPreviewHeight);
             }
 
             for (int i = 0; i < planes.length; ++i) {
@@ -256,9 +255,6 @@ public class OnGetImageListener implements OnImageAvailableListener {
                             );
                         }
 
-                        Log.v("test27", "detecting bitmap of size " + mCroppedBitmap.getWidth()
-                                + " x " + mCroppedBitmap.getHeight());
-
                         long startTime = System.currentTimeMillis();
                         List<VisionDetRet> results;
                         synchronized (OnGetImageListener.this) {
@@ -268,8 +264,8 @@ public class OnGetImageListener implements OnImageAvailableListener {
                         Log.v(
                                 TAG,
                                 "Processing completed in "
-                                        + (endTime - startTime)/1000f
-                                        + "seconds"
+                                        + (endTime - startTime)
+                                        + " milliseconds"
                         );
                         // Draw on bitmap
                         if (results != null) {
@@ -286,12 +282,10 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
                                 // Draw landmark
                                 ArrayList<Point> landmarks = ret.getFaceLandmarks();
-                                Log.v("result", "" + landmarks.size());
                                 for (Point point : landmarks) {
                                     int pointX = (int) (point.x * resizeRatio);
                                     int pointY = (int) (point.y * resizeRatio);
                                     canvas.drawCircle(pointX, pointY, 2, mFaceLandmarkPaint);
-                                    Log.v("point", "(" + pointX + ", " + pointY + ")");
                                 }
                             }
                         }
