@@ -20,11 +20,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
@@ -38,9 +35,9 @@ import android.view.WindowManager;
 
 import com.nsit.pranjals.vykt.ChatActivity;
 import com.nsit.pranjals.vykt.R;
+import com.nsit.pranjals.vykt.views.FeatureView;
 import com.tzutalin.dlibtest.FileUtils;
 import com.tzutalin.dlibtest.ImageUtils;
-import com.nsit.pranjals.vykt.views.FloatingCameraWindow;
 import com.tzutalin.dlib.Constants;
 import com.tzutalin.dlib.FaceDet;
 import com.tzutalin.dlib.VisionDetRet;
@@ -48,7 +45,6 @@ import com.tzutalin.dlib.VisionDetRet;
 import junit.framework.Assert;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,7 +54,7 @@ import java.util.List;
 public class OnGetImageListener implements OnImageAvailableListener {
     private static final boolean SAVE_PREVIEW_BITMAP = false;
 
-    private static final int INPUT_SIZE = 224;
+    public static final int INPUT_SIZE = 224;
     private static final String TAG = "OnGetImageListener";
 
     private int mPreviewWidth = 0;
@@ -73,31 +69,22 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
     private Context mContext;
     private FaceDet mFaceDet;
-    private FloatingCameraWindow mWindow;
-    private Paint mFaceLandmarkPaint;
+    private FeatureView featureView;
 
     public void initialize(
             final Context context,
-            final Handler handler) {
+            final Handler handler,
+            final FeatureView featureView) {
         this.mContext = context;
         this.mInferenceHandler = handler;
         mFaceDet = new FaceDet(Constants.getFaceShapeModelPath());
-        mWindow = new FloatingCameraWindow(mContext);
-
-        mFaceLandmarkPaint = new Paint();
-        mFaceLandmarkPaint.setColor(Color.GREEN);
-        mFaceLandmarkPaint.setStrokeWidth(2);
-        mFaceLandmarkPaint.setStyle(Paint.Style.STROKE);
+        this.featureView = featureView;
     }
 
     public void deInitialize() {
         synchronized (OnGetImageListener.this) {
             if (mFaceDet != null) {
                 mFaceDet.release();
-            }
-
-            if (mWindow != null) {
-                mWindow.release();
             }
         }
     }
@@ -267,29 +254,9 @@ public class OnGetImageListener implements OnImageAvailableListener {
                                         + (endTime - startTime)
                                         + " milliseconds"
                         );
-                        // Draw on bitmap
-                        if (results != null) {
-                            // Log.v("result", "" + results.size());
-                            for (final VisionDetRet ret : results) {
-                                float resizeRatio = 1.0f;
-                                Rect bounds = new Rect();
-                                bounds.left = (int) (ret.getLeft() * resizeRatio);
-                                bounds.top = (int) (ret.getTop() * resizeRatio);
-                                bounds.right = (int) (ret.getRight() * resizeRatio);
-                                bounds.bottom = (int) (ret.getBottom() * resizeRatio);
-                                Canvas canvas = new Canvas(mCroppedBitmap);
-                                canvas.drawRect(bounds, mFaceLandmarkPaint);
+                        // Draw on the featureView.
+                        featureView.drawResults(results);
 
-                                // Draw landmark
-                                ArrayList<Point> landmarks = ret.getFaceLandmarks();
-                                for (Point point : landmarks) {
-                                    int pointX = (int) (point.x * resizeRatio);
-                                    int pointY = (int) (point.y * resizeRatio);
-                                    canvas.drawCircle(pointX, pointY, 2, mFaceLandmarkPaint);
-                                }
-                            }
-                        }
-                        mWindow.setRGBBitmap(mCroppedBitmap);
                         mIsComputing = false;
                     }
                 });

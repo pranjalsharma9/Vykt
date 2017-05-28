@@ -20,7 +20,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -37,11 +36,9 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -57,6 +54,7 @@ import android.widget.Toast;
 
 import com.nsit.pranjals.vykt.listeners.OnGetImageListener;
 import com.nsit.pranjals.vykt.views.AutoFitTextureView;
+import com.nsit.pranjals.vykt.views.FeatureView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,28 +102,6 @@ public class ChatActivity extends AppCompatActivity {
             return false;
         } else {
             return true;
-        }
-    }
-
-    // Handling result for overlay drawing permission.
-    private static int OVERLAY_PERMISSION_REQ_CODE = 1;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this.getApplicationContext())) {
-                    Toast.makeText(
-                            this,
-                            "CameraActivity SYSTEM_ALERT_WINDOW, permission not granted...",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                } else {
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
-                }
-            }
         }
     }
 
@@ -179,6 +155,9 @@ public class ChatActivity extends AppCompatActivity {
 
     // TextureView for displaying camera feed. Changed from AutoFitTextureView.
     private AutoFitTextureView textureView;
+
+    // FeatureView for drawing features on TextureView.
+    private FeatureView featureView;
 
     // For camera preview.
     private CameraCaptureSession captureSession;
@@ -311,8 +290,10 @@ public class ChatActivity extends AppCompatActivity {
                 final int orientation = getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
+                    featureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                 } else {
                     textureView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+                    featureView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
                 }
 
                 this.cameraId = cameraId;
@@ -509,7 +490,8 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         Log.i(TAG, "Getting assets.");
-        mOnGetPreviewListener.initialize(this, inferenceHandler);
+
+        mOnGetPreviewListener.initialize(this, inferenceHandler, featureView);
     }
 
     /*
@@ -599,20 +581,13 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this.getApplicationContext())) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
                 verifyPermissions(this);
             }
         }
         textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
+        featureView = (FeatureView) findViewById(R.id.feature_view);
     }
 
     @Override
