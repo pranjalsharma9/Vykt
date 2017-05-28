@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#4db6ac</color>
+    <color name="colorPrimaryDark">#26a69a</color>
+    <color name="colorPrimaryDarkTranslucent">#dd26a69a</color>
+    <color name="colorBackground">#80cbc4</color>
+    <color name="colorAccent">#f9a825</color>
+
+    <!-- ChatActivity colors -->
+    <color name="act_chat_chat_box_text_color">#bb000000</color>
+    <color name="act_chat_chat_box_bg_color">#aaffffff</color>
+    <color name="act_chat_chat_bubble_bg_color">#99ffffff</color>
+    <color name="act_chat_chat_bubble_text_color">#99000000</color>
+    <color name="act_chat_chat_bubble_header_text_color">#dd26a69a</color>
 </resources>

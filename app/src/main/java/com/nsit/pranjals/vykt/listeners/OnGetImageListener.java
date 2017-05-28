@@ -90,16 +90,6 @@ public class OnGetImageListener implements OnImageAvailableListener {
     }
 
     private void drawResizedBitmap(final Bitmap src, final Bitmap dst) {
-        // int mScreenRotation;
-        Display getOrient =
-                ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE))
-                        .getDefaultDisplay();
-        Point point = new Point();
-        getOrient.getSize(point);
-        int screen_width = point.x;
-        int screen_height = point.y;
-        Log.d(TAG, String.format("screen size (%d,%d)", screen_width, screen_height));
-
         // Fixes rotation issues.
         final int rotation =
                 ((ChatActivity) mContext).getWindowManager().getDefaultDisplay().getRotation();

@@ -3,16 +3,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nsit.pranjals.vykt.ChatActivity">
+    tools:context="com.nsit.pranjals.vykt.ChatActivity"
+    android:background="@drawable/bg_act_chat">
 
-    <com.nsit.pranjals.vykt.views.AutoFitTextureView
-        android:id="@+id/camera_feed_texture_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <com.nsit.pranjals.vykt.views.FeatureView
-        android:id="@+id/feature_view"
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="@dimen/act_chat_chat_box_container_height">
+
+        <RelativeLayout
+            android:id="@+id/camera_feed_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true">
+
+            <com.nsit.pranjals.vykt.views.AutoFitTextureView
+                android:id="@+id/camera_feed_texture_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.nsit.pranjals.vykt.views.FeatureView
+                android:id="@+id/feature_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/camera_feed_container"
+            android:paddingTop="@dimen/act_chat_chat_box_padding"
+            android:paddingStart="@dimen/act_chat_chat_box_padding"
+            android:paddingBottom="@dimen/act_chat_chat_box_padding"
+            android:paddingEnd="@dimen/act_chat_chat_box_paddingEnd"
+            android:clipToPadding="false"
+            android:textSize="@dimen/act_chat_chat_box_text_size"
+            android:textColor="@color/act_chat_chat_box_text_color"
+            android:gravity="start|top"
+            android:background="@drawable/bg_et_chat_box" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="@dimen/act_chat_send_fab_size"
+            android:layout_height="@dimen/act_chat_send_fab_size"
+            android:layout_marginEnd="@dimen/act_chat_send_fab_margin"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_send_white_24dp" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
