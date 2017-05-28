@@ -50,9 +50,12 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.WindowManager;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.nsit.pranjals.vykt.adapters.ChatListAdapter;
 import com.nsit.pranjals.vykt.listeners.OnGetImageListener;
+import com.nsit.pranjals.vykt.models.Message;
 import com.nsit.pranjals.vykt.views.AutoFitTextureView;
 import com.nsit.pranjals.vykt.views.FeatureView;
 
@@ -588,6 +591,7 @@ public class ChatActivity extends AppCompatActivity {
         }
         textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
         featureView = (FeatureView) findViewById(R.id.feature_view);
+        initChat();
     }
 
     @Override
@@ -641,6 +645,36 @@ public class ChatActivity extends AppCompatActivity {
         } catch (final InterruptedException e) {
             Log.e(TAG, "error" ,e );
         }
+    }
+
+    //==============================================================================================
+    // CHAT RELATED STUFF!
+    //==============================================================================================
+
+    private ArrayList<Message> messages;
+
+    private void initChat () {
+        Log.v("test27", "reached here!");
+        messages = new ArrayList<>();
+        //setting the adapters.
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(new Message(9018202, "sender name", "Sample message"));
+        ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
+        ChatListAdapter chatListAdapter = new ChatListAdapter(messages, chatList);
+        chatList.setAdapter(chatListAdapter);
     }
 
 }

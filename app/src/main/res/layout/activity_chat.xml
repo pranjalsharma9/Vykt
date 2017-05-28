@@ -6,16 +6,37 @@
     tools:context="com.nsit.pranjals.vykt.ChatActivity"
     android:background="@drawable/bg_act_chat">
 
+    <ListView
+        android:id="@+id/act_chat_chat_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/act_chat_chat_box_container"
+        android:padding="@dimen/act_chat_chat_list_padding"
+        android:clipToPadding="false"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/act_chat_chat_list_divider_height" >
+    </ListView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/act_chat_chat_box_shadow_backdrop_height"
+        android:background="@drawable/shadow_bottom_bar"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.75" />
+
     <RelativeLayout
+        android:id="@+id/act_chat_chat_box_container"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="@dimen/act_chat_chat_box_container_height">
 
         <RelativeLayout
-            android:id="@+id/camera_feed_container"
+            android:id="@+id/act_chat_camera_feed_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:background="@color/act_chat_chat_box_bg_color" >
 
             <com.nsit.pranjals.vykt.views.AutoFitTextureView
                 android:id="@+id/camera_feed_texture_view"
@@ -33,7 +54,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@id/camera_feed_container"
+            android:layout_toEndOf="@id/act_chat_camera_feed_container"
             android:paddingTop="@dimen/act_chat_chat_box_padding"
             android:paddingStart="@dimen/act_chat_chat_box_padding"
             android:paddingBottom="@dimen/act_chat_chat_box_padding"

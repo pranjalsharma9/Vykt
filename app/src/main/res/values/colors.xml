@@ -9,7 +9,7 @@
     <!-- ChatActivity colors -->
     <color name="act_chat_chat_box_text_color">#bb000000</color>
     <color name="act_chat_chat_box_bg_color">#aaffffff</color>
-    <color name="act_chat_chat_bubble_bg_color">#99ffffff</color>
+    <color name="act_chat_chat_bubble_bg_color">#bbffffff</color>
     <color name="act_chat_chat_bubble_text_color">#99000000</color>
     <color name="act_chat_chat_bubble_header_text_color">#dd26a69a</color>
 </resources>
