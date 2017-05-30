@@ -1,5 +1,6 @@
 package com.nsit.pranjals.vykt.adapters;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class ChatListAdapter extends BaseAdapter {
         TextView messageTime = (TextView) view.findViewById(R.id.tv_chat_bubble_time);
         TextView messageSender = (TextView) view.findViewById(R.id.tv_chat_bubble_sender);
         TextView messageContent = (TextView) view.findViewById(R.id.tv_chat_bubble_content);
+        TextView messageExpression = (TextView) view.findViewById(R.id.tv_chat_bubble_expression);
         if (message.timestamp != 0L) {
             messageTime.setText(
                     String.format(Locale.getDefault(), "%02d:%02d:%02d",
@@ -72,6 +74,18 @@ public class ChatListAdapter extends BaseAdapter {
         }
         messageSender.setText(message.sender);
         messageContent.setText(message.text);
+        messageExpression.setTextColor(message.expression.getColor());
+        messageExpression.setText(message.expression.getStateString());
+        View wrapperView = view.findViewById(R.id.wrapper_chat_bubble);
+        Drawable background = wrapperView.getBackground();
+        background.setTint(message.expression.getBgColor());
+        wrapperView.setBackground(background);
+
+        if (message.sender.equals("you")) {
+            view.setPadding(100, 0, 0, 0);
+        } else {
+            view.setPadding(0, 0, 100, 0);
+        }
 
         // returns the view for the current row
         return view;

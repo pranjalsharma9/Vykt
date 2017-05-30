@@ -6,10 +6,20 @@
     <color name="colorBackground">#80cbc4</color>
     <color name="colorAccent">#f9a825</color>
 
+    <!-- Expression Colors -->
+    <color name="color_happiness">#00e676</color>
+    <color name="color_sadness">#4f88b9</color>
+    <color name="color_anger">#ef5350</color>
+    <color name="color_disgust">#795548</color>
+    <color name="color_surprise">#ff18ff</color>
+    <color name="color_fear">#c0ca33</color>
+    <color name="color_neutral">#dd26a69a</color>
+
     <!-- ChatActivity colors -->
     <color name="act_chat_chat_box_text_color">#bb000000</color>
     <color name="act_chat_chat_box_bg_color">#aaffffff</color>
     <color name="act_chat_chat_bubble_bg_color">#bbffffff</color>
     <color name="act_chat_chat_bubble_text_color">#99000000</color>
     <color name="act_chat_chat_bubble_header_text_color">#dd26a69a</color>
+    <color name="act_chat_top_bar_title_color">#ccffffff</color>
 </resources>

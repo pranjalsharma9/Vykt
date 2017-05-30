@@ -654,24 +654,136 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<Message> messages;
 
     private void initChat () {
-        Log.v("test27", "reached here!");
         messages = new ArrayList<>();
         //setting the adapters.
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
-        messages.add(new Message(9018202, "sender name", "Sample message"));
+        messages.add(
+                new Message(
+                        1495983380,
+                        "you",
+                        "Hey! You there?",
+                        Message.Expression.SADNESS
+                )
+        );
+        messages.add(
+                new Message(
+                        1495984400,
+                        "Pranjal Verma",
+                        "What happened? You look sad.",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495985500,
+                        "you",
+                        "Someone put a long scratch on your car",
+                        Message.Expression.SADNESS
+                )
+        );
+        messages.add(
+                new Message(
+                        1495986690,
+                        "Pranjal Verma",
+                        "What?",
+                        Message.Expression.DISGUST
+                )
+        );
+        messages.add(
+                new Message(
+                        1495986700,
+                        "Pranjal Verma",
+                        "Who would do that!",
+                        Message.Expression.DISGUST
+                )
+        );
+        messages.add(
+                new Message(
+                        1495988900,
+                        "you",
+                        "Just kidding... LOL",
+                        Message.Expression.HAPPINESS
+                )
+        );
+        messages.add(
+                new Message(
+                        1495990000,
+                        "Pranjal Verma",
+                        "Come on!\nWhy do you have to do this????!",
+                        Message.Expression.ANGER
+                )
+        );
+        messages.add(
+                new Message(
+                        1495992380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
+        messages.add(
+                new Message(
+                        1495983380,
+                        "sender name",
+                        "Sample message",
+                        Message.Expression.NEUTRAL
+                )
+        );
         ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
         ChatListAdapter chatListAdapter = new ChatListAdapter(messages, chatList);
         chatList.setAdapter(chatListAdapter);

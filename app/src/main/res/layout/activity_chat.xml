@@ -6,17 +6,51 @@
     tools:context="com.nsit.pranjals.vykt.ChatActivity"
     android:background="@drawable/bg_act_chat">
 
+    <LinearLayout
+        android:id="@+id/act_chat_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/act_chat_top_bar_height"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorPrimary" >
+
+        <ImageButton
+            android:id="@+id/button_back"
+            android:layout_width="@dimen/act_chat_top_bar_back_button_size"
+            android:layout_height="@dimen/act_chat_top_bar_back_button_size"
+            android:background="@android:color/transparent"
+            android:stateListAnimator="@null"
+            android:src="@drawable/ic_arrow_back_white_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/act_chat_top_bar_tv_title_height"
+            android:text="Pranjal Verma"
+            android:textSize="@dimen/act_chat_top_bar_tv_title_text_size"
+            android:textColor="@color/act_chat_top_bar_title_color"
+            android:padding="@dimen/act_chat_top_bar_tv_title_padding"
+            android:gravity="center_vertical" />
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/act_chat_chat_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/act_chat_top_bar"
         android:layout_above="@+id/act_chat_chat_box_container"
         android:padding="@dimen/act_chat_chat_list_padding"
         android:clipToPadding="false"
         android:divider="@android:color/transparent"
         android:dividerHeight="@dimen/act_chat_chat_list_divider_height" >
     </ListView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/act_chat_top_bar_shadow_backdrop_height"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/shadow_top_bar"
+        android:alpha="0.75" />
 
     <View
         android:layout_width="match_parent"
