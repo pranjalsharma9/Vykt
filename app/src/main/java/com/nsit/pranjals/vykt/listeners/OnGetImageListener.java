@@ -29,9 +29,7 @@ import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Handler;
 import android.os.Trace;
 import android.util.Log;
-import android.view.Display;
 import android.view.Surface;
-import android.view.WindowManager;
 
 import com.nsit.pranjals.vykt.ChatActivity;
 import com.nsit.pranjals.vykt.R;
@@ -45,7 +43,10 @@ import com.tzutalin.dlib.VisionDetRet;
 import junit.framework.Assert;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import libsvm.*;
 
 /**
  * Class that takes in preview frames and converts the image to Bitmaps
@@ -64,6 +65,8 @@ public class OnGetImageListener implements OnImageAvailableListener {
     private Bitmap mRGBFrameBitmap = null;
     private Bitmap mCroppedBitmap = null;
 
+    private svm_model model;
+
     private boolean mIsComputing = false;
     private Handler mInferenceHandler;
 
@@ -79,6 +82,11 @@ public class OnGetImageListener implements OnImageAvailableListener {
         this.mInferenceHandler = handler;
         mFaceDet = new FaceDet(Constants.getFaceShapeModelPath());
         this.featureView = featureView;
+        try {
+            model = svm.svm_load_model(com.nsit.pranjals.vykt.utils.FileUtils.getSVMModelPath());
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     public void deInitialize() {
@@ -231,6 +239,14 @@ public class OnGetImageListener implements OnImageAvailableListener {
                                     Constants.getFaceShapeModelPath()
                             );
                         }
+                        if (!new File(com.nsit.pranjals.vykt.utils.FileUtils.getSVMModelPath())
+                                .exists()) {
+                            FileUtils.copyFileFromRawToOthers(
+                                    mContext,
+                                    R.raw.svm_data,
+                                    com.nsit.pranjals.vykt.utils.FileUtils.getSVMModelPath()
+                            );
+                        }
 
                         long startTime = System.currentTimeMillis();
                         List<VisionDetRet> results;
@@ -244,6 +260,9 @@ public class OnGetImageListener implements OnImageAvailableListener {
                                         + (endTime - startTime)
                                         + " milliseconds"
                         );
+
+                        predict(results);
+
                         // Draw on the featureView.
                         featureView.drawResults(results);
 
@@ -253,4 +272,76 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
         Trace.endSection();
     }
+
+    private double[] x = new double[68];
+    private double[] y = new double[68];
+    private double[] a = new double[68];
+    private double[] d = new double[68];
+    private double angleNose;
+
+    private void predict (List<VisionDetRet> results) {
+
+        if (results == null || results.size() == 0)
+            return;
+
+        List<Point> points = results.get(0).getFaceLandmarks();
+
+        double mx = 0, my = 0;
+
+        for (int i = 0; i < 68; i++) {
+            mx += points.get(i).x;
+            my += points.get(i).y;
+        }
+
+        mx = mx / 68;
+        my = my / 68;
+
+        for (int i = 0; i < 68; i++) {
+            x[i] = points.get(i).x - mx;
+            y[i] = points.get(i).y - my;
+        }
+        if (x[26] == x[29]) {
+            angleNose = 0;
+        } else {
+            angleNose = (int) (Math.atan((y[26] - y[29])/(x[26] - x[29]))*180/Math.PI);
+        }
+        if (angleNose < 0) {
+            angleNose += 90;
+        } else {
+            angleNose -= 90;
+        }
+        for (int i = 0; i < 68; i++) {
+            d[i] = Math.sqrt(x[i]*x[i] + y[i]*y[i]);
+            if (x[i] != 0) {
+                a[i] = (Math.atan(y[i] / x[i]) * 180 / Math.PI) - angleNose;
+            } else {
+                a[i] = 90 - angleNose;
+            }
+        }
+
+        svm_node[] s = new svm_node[272];
+
+        for (int j = 0; j < 68; j++) {
+            int k = j * 4;
+            s[k] = new svm_node();
+            s[k].index = k + 1;
+            s[k].value = x[j];
+            k++;
+            s[k] = new svm_node();
+            s[k].index = k + 1;
+            s[k].value = y[j];
+            k++;
+            s[k] = new svm_node();
+            s[k].index = k + 1;
+            s[k].value = d[j];
+            k++;
+            s[k] = new svm_node();
+            s[k].index = k + 1;
+            s[k].value = a[j];
+        }
+
+        double r = svm.svm_predict(model, s);
+        Log.v("res27", r + "");
+    }
+
 }

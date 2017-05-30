@@ -56,9 +56,11 @@ import android.widget.Toast;
 import com.nsit.pranjals.vykt.adapters.ChatListAdapter;
 import com.nsit.pranjals.vykt.listeners.OnGetImageListener;
 import com.nsit.pranjals.vykt.models.Message;
+import com.nsit.pranjals.vykt.utils.FileUtils;
 import com.nsit.pranjals.vykt.views.AutoFitTextureView;
 import com.nsit.pranjals.vykt.views.FeatureView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +68,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import libsvm.*;
 
 import hugo.weaving.DebugLog;
 
@@ -592,6 +596,7 @@ public class ChatActivity extends AppCompatActivity {
         textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
         featureView = (FeatureView) findViewById(R.id.feature_view);
         initChat();
+        svmInit();
     }
 
     @Override
@@ -787,6 +792,18 @@ public class ChatActivity extends AppCompatActivity {
         ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
         ChatListAdapter chatListAdapter = new ChatListAdapter(messages, chatList);
         chatList.setAdapter(chatListAdapter);
+    }
+
+    //==============================================================================================
+    // SVM Functions.
+    //==============================================================================================
+    private void svmInit () {
+        try {
+            svm_model model = svm.svm_load_model(FileUtils.getSVMModelPath());
+            Log.v("test27", model.param.kernel_type + "");
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
 }
