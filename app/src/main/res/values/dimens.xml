@@ -20,5 +20,7 @@
     <dimen name="act_chat_top_bar_tv_title_height">48dp</dimen>
     <dimen name="act_chat_top_bar_tv_title_text_size">16sp</dimen>
     <dimen name="act_chat_top_bar_tv_title_padding">6dp</dimen>
+    <dimen name="act_chat_chat_box_tv_expression_height">18dp</dimen>
+    <dimen name="act_chat_chat_box_tv_expression_text_size">12sp</dimen>
 
 </resources>

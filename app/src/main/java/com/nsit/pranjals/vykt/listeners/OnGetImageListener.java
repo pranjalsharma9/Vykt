@@ -27,12 +27,15 @@ import android.media.Image.Plane;
 import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Trace;
 import android.util.Log;
 import android.view.Surface;
+import android.widget.TextView;
 
 import com.nsit.pranjals.vykt.ChatActivity;
 import com.nsit.pranjals.vykt.R;
+import com.nsit.pranjals.vykt.enums.Expression;
 import com.nsit.pranjals.vykt.views.FeatureView;
 import com.tzutalin.dlibtest.FileUtils;
 import com.tzutalin.dlibtest.ImageUtils;
@@ -69,19 +72,24 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
     private boolean mIsComputing = false;
     private Handler mInferenceHandler;
+    private Handler uiHandler;
 
     private Context mContext;
     private FaceDet mFaceDet;
     private FeatureView featureView;
+    private TextView tvExpression;
 
     public void initialize(
             final Context context,
             final Handler handler,
-            final FeatureView featureView) {
+            final FeatureView featureView,
+            final TextView tvExpression) {
         this.mContext = context;
         this.mInferenceHandler = handler;
+        this.uiHandler = new Handler(Looper.getMainLooper());
         mFaceDet = new FaceDet(Constants.getFaceShapeModelPath());
         this.featureView = featureView;
+        this.tvExpression = tvExpression;
         try {
             model = svm.svm_load_model(com.nsit.pranjals.vykt.utils.FileUtils.getSVMModelPath());
         } catch (IOException ioe) {
@@ -107,7 +115,7 @@ public class OnGetImageListener implements OnImageAvailableListener {
             mScreenRotation = 0;
         }*/
 
-        // We detect faces in a cropped square frame.
+        // We detect faces in angles cropped square frame.
         Assert.assertEquals(dst.getWidth(), dst.getHeight());
         final float minDim = Math.min(src.getWidth(), src.getHeight());
 
@@ -172,7 +180,7 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
                 Log.d(
                         TAG,
-                        String.format("Initializing at size %dx%d", mPreviewWidth, mPreviewHeight)
+                        String.format("Initializing at size %dx%distance", mPreviewWidth, mPreviewHeight)
                 );
 
                 mRGBBytes = new int[mPreviewWidth * mPreviewHeight];
@@ -218,7 +226,7 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
         mRGBFrameBitmap.setPixels(mRGBBytes,
                 0,                                  // offset
-                mPreviewWidth,                      // number of pixels in a row
+                mPreviewWidth,                      // number of pixels in angles row
                 0, 0,                               // start pixel coordinates
                 mPreviewWidth, mPreviewHeight);     // end pixel coordinates
 
@@ -261,10 +269,24 @@ public class OnGetImageListener implements OnImageAvailableListener {
                                         + " milliseconds"
                         );
 
-                        predict(results);
+                        final Expression detectedExpression = predict(results);
 
                         // Draw on the featureView.
                         featureView.drawResults(results);
+
+                        // Set the text
+
+                        uiHandler.postAtFrontOfQueue(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (detectedExpression != null) {
+                                    tvExpression.setTextColor(detectedExpression.getColor());
+                                    tvExpression.setText(detectedExpression.getStateString());
+                                } else {
+                                    tvExpression.setText("");
+                                }
+                            }
+                        });
 
                         mIsComputing = false;
                     }
@@ -273,20 +295,21 @@ public class OnGetImageListener implements OnImageAvailableListener {
         Trace.endSection();
     }
 
-    private double[] x = new double[68];
-    private double[] y = new double[68];
-    private double[] a = new double[68];
-    private double[] d = new double[68];
-    private double angleNose;
+    private double[] shiftedX = new double[68];
+    private double[] shiftedY = new double[68];
+    private double[] angles = new double[68];
+    private double[] distance = new double[68];
 
-    private void predict (List<VisionDetRet> results) {
+    private Expression predict (List<VisionDetRet> results) {
+
+        double angleNose;
 
         if (results == null || results.size() == 0)
-            return;
+            return null;
 
         List<Point> points = results.get(0).getFaceLandmarks();
 
-        if (points.size() == 0) return;
+        if (points.size() == 0) return null;
 
         double mx = 0, my = 0;
 
@@ -299,13 +322,13 @@ public class OnGetImageListener implements OnImageAvailableListener {
         my = my / 68;
 
         for (int i = 0; i < 68; i++) {
-            x[i] = points.get(i).x - mx;
-            y[i] = points.get(i).y - my;
+            shiftedX[i] = points.get(i).x - mx;
+            shiftedY[i] = points.get(i).y - my;
         }
-        if (x[26] == x[29]) {
+        if (shiftedX[26] == shiftedX[29]) {
             angleNose = 0;
         } else {
-            angleNose = (int) (Math.atan((y[26] - y[29])/(x[26] - x[29]))*180/Math.PI);
+            angleNose = (int) (Math.atan((shiftedY[26] - shiftedY[29])/(shiftedX[26] - shiftedX[29]))*180/Math.PI);
         }
         if (angleNose < 0) {
             angleNose += 90;
@@ -314,14 +337,14 @@ public class OnGetImageListener implements OnImageAvailableListener {
         }
         double maxDist = 0;
         for (int i = 0; i < 68; i++) {
-            d[i] = Math.sqrt(x[i]*x[i] + y[i]*y[i]);
-            if (d[i] > maxDist) {
-                maxDist = d[i];
+            distance[i] = Math.sqrt(shiftedX[i]* shiftedX[i] + shiftedY[i]* shiftedY[i]);
+            if (distance[i] > maxDist) {
+                maxDist = distance[i];
             }
-            if (x[i] != 0) {
-                a[i] = (Math.atan(y[i] / x[i]) * 180 / Math.PI) - angleNose;
+            if (shiftedX[i] != 0) {
+                angles[i] = (Math.atan(shiftedY[i] / shiftedX[i]) * 180 / Math.PI) - angleNose;
             } else {
-                a[i] = 90 - angleNose;
+                angles[i] = 90 - angleNose;
             }
         }
 
@@ -331,23 +354,23 @@ public class OnGetImageListener implements OnImageAvailableListener {
             int k = j * 4;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = x[j] / 68;
+            s[k].value = shiftedX[j] / 68;
             k++;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = y[j] / 68;
+            s[k].value = shiftedY[j] / 68;
             k++;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = d[j] / 68;
+            s[k].value = distance[j] / 68;
             k++;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = a[j];
+            s[k].value = angles[j];
         }
 
-        double r = svm.svm_predict(model, s);
-        Log.v("res27", r + " with maxDist " + maxDist);
+        int detectedExpressionOrdinal = (int) svm.svm_predict(model, s);
+        return Expression.values()[detectedExpressionOrdinal];
     }
 
 }

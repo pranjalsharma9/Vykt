@@ -51,16 +51,16 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.WindowManager;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nsit.pranjals.vykt.adapters.ChatListAdapter;
+import com.nsit.pranjals.vykt.enums.Expression;
 import com.nsit.pranjals.vykt.listeners.OnGetImageListener;
 import com.nsit.pranjals.vykt.models.Message;
-import com.nsit.pranjals.vykt.utils.FileUtils;
 import com.nsit.pranjals.vykt.views.AutoFitTextureView;
 import com.nsit.pranjals.vykt.views.FeatureView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,8 +68,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import libsvm.*;
 
 import hugo.weaving.DebugLog;
 
@@ -165,6 +163,9 @@ public class ChatActivity extends AppCompatActivity {
 
     // FeatureView for drawing features on TextureView.
     private FeatureView featureView;
+
+    // TextView for displaying detected expression.
+    private TextView tvExpressionView;
 
     // For camera preview.
     private CameraCaptureSession captureSession;
@@ -498,7 +499,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Log.i(TAG, "Getting assets.");
 
-        mOnGetPreviewListener.initialize(this, inferenceHandler, featureView);
+        mOnGetPreviewListener.initialize(this, inferenceHandler, featureView, tvExpressionView);
     }
 
     /*
@@ -595,8 +596,8 @@ public class ChatActivity extends AppCompatActivity {
         }
         textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
         featureView = (FeatureView) findViewById(R.id.feature_view);
+        tvExpressionView = (TextView) findViewById(R.id.tv_act_chat_expression);
         initChat();
-        svmInit();
     }
 
     @Override
@@ -666,7 +667,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "you",
                         "Hey! You there?",
-                        Message.Expression.SADNESS
+                        Expression.SADNESS
                 )
         );
         messages.add(
@@ -674,7 +675,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495984400,
                         "Pranjal Verma",
                         "What happened? You look sad.",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -682,7 +683,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495985500,
                         "you",
                         "Someone put a long scratch on your car",
-                        Message.Expression.SADNESS
+                        Expression.SADNESS
                 )
         );
         messages.add(
@@ -690,7 +691,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495986690,
                         "Pranjal Verma",
                         "What?",
-                        Message.Expression.DISGUST
+                        Expression.DISGUST
                 )
         );
         messages.add(
@@ -698,7 +699,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495986700,
                         "Pranjal Verma",
                         "Who would do that!",
-                        Message.Expression.DISGUST
+                        Expression.DISGUST
                 )
         );
         messages.add(
@@ -706,7 +707,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495988900,
                         "you",
                         "Just kidding... LOL",
-                        Message.Expression.HAPPINESS
+                        Expression.HAPPINESS
                 )
         );
         messages.add(
@@ -714,7 +715,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495990000,
                         "Pranjal Verma",
                         "Come on!\nWhy do you have to do this????!",
-                        Message.Expression.ANGER
+                        Expression.ANGER
                 )
         );
         messages.add(
@@ -722,7 +723,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495992380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -730,7 +731,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -738,7 +739,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -746,7 +747,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -754,7 +755,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -762,7 +763,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -770,7 +771,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -778,7 +779,7 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         messages.add(
@@ -786,24 +787,12 @@ public class ChatActivity extends AppCompatActivity {
                         1495983380,
                         "sender name",
                         "Sample message",
-                        Message.Expression.NEUTRAL
+                        Expression.NEUTRAL
                 )
         );
         ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
         ChatListAdapter chatListAdapter = new ChatListAdapter(messages, chatList);
         chatList.setAdapter(chatListAdapter);
-    }
-
-    //==============================================================================================
-    // SVM Functions.
-    //==============================================================================================
-    private void svmInit () {
-        try {
-            svm_model model = svm.svm_load_model(FileUtils.getSVMModelPath());
-            Log.v("test27", model.param.kernel_type + "");
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
     }
 
 }

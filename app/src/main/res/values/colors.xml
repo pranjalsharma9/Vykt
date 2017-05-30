@@ -22,4 +22,5 @@
     <color name="act_chat_chat_bubble_text_color">#99000000</color>
     <color name="act_chat_chat_bubble_header_text_color">#dd26a69a</color>
     <color name="act_chat_top_bar_title_color">#ccffffff</color>
+    <color name="act_chat_tv_expression_bg_color">#99ffffff</color>
 </resources>

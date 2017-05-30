@@ -82,6 +82,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <TextView
+                android:id="@+id/tv_act_chat_expression"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/act_chat_chat_box_tv_expression_height"
+                android:layout_alignParentBottom="true"
+                android:layout_alignStart="@id/camera_feed_texture_view"
+                android:layout_alignEnd="@id/camera_feed_texture_view"
+                android:textSize="@dimen/act_chat_chat_box_tv_expression_text_size"
+                android:background="@color/act_chat_tv_expression_bg_color"
+                android:gravity="center" />
+
         </RelativeLayout>
 
         <EditText
