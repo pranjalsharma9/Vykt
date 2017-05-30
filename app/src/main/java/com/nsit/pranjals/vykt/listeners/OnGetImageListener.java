@@ -286,6 +286,8 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
         List<Point> points = results.get(0).getFaceLandmarks();
 
+        if (points.size() == 0) return;
+
         double mx = 0, my = 0;
 
         for (int i = 0; i < 68; i++) {
@@ -310,8 +312,12 @@ public class OnGetImageListener implements OnImageAvailableListener {
         } else {
             angleNose -= 90;
         }
+        double maxDist = 0;
         for (int i = 0; i < 68; i++) {
             d[i] = Math.sqrt(x[i]*x[i] + y[i]*y[i]);
+            if (d[i] > maxDist) {
+                maxDist = d[i];
+            }
             if (x[i] != 0) {
                 a[i] = (Math.atan(y[i] / x[i]) * 180 / Math.PI) - angleNose;
             } else {
@@ -325,15 +331,15 @@ public class OnGetImageListener implements OnImageAvailableListener {
             int k = j * 4;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = x[j];
+            s[k].value = x[j] / 68;
             k++;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = y[j];
+            s[k].value = y[j] / 68;
             k++;
             s[k] = new svm_node();
             s[k].index = k + 1;
-            s[k].value = d[j];
+            s[k].value = d[j] / 68;
             k++;
             s[k] = new svm_node();
             s[k].index = k + 1;
@@ -341,7 +347,7 @@ public class OnGetImageListener implements OnImageAvailableListener {
         }
 
         double r = svm.svm_predict(model, s);
-        Log.v("res27", r + "");
+        Log.v("res27", r + " with maxDist " + maxDist);
     }
 
 }
