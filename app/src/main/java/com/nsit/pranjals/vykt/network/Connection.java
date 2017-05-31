@@ -1,6 +1,8 @@
 package com.nsit.pranjals.vykt.network;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.nsit.pranjals.vykt.App;
 import com.nsit.pranjals.vykt.enums.Expression;
@@ -25,11 +27,16 @@ public class Connection {
     private static String ipAddress = "192.168.0.103";
     private static final int SERVER_PORT_NUMBER = 11111;
     private static final int SO_TIMEOUT = 0;
+
+    private static final long RECEIVE_DURATION = 2000; // 2 seconds.
+
     private static Socket socket;
     private static ObjectInputStream in;
     private static ObjectOutputStream out;
     private static OnConnectionChangeListener listener;
     private static OnConnectionChangeListener messageReceiver = null;
+
+    private static Handler uiHandler = new Handler(Looper.getMainLooper());
 
     //==============================================================================================
     //  ConnectTask
@@ -204,14 +211,20 @@ public class Connection {
         @Override
         protected void onProgressUpdate (Message... messages) {
             for (Message message : messages) {
-                listener.onMessageReceived(message);
+                if (listener != null)
+                    listener.onMessageReceived(message);
             }
         }
 
         @Override
         protected void onPostExecute (Void object) {
-            if (Connection.messageReceiver != null)
-                (new ReceiveTask(listener)).execute();
+            uiHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (Connection.messageReceiver != null)
+                        (new ReceiveTask(Connection.messageReceiver)).execute();
+                }
+            }, RECEIVE_DURATION);
         }
 
     }

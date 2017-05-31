@@ -271,7 +271,9 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
                         final Expression detectedExpression = predict(results);
 
-                        lastDetectedExpression = detectedExpression;
+                        if (detectedExpression != null) {
+                            expressionWeight[detectedExpression.ordinal()]++;
+                        }
 
                         // Draw on the featureView.
                         featureView.drawResults(results);
@@ -297,10 +299,19 @@ public class OnGetImageListener implements OnImageAvailableListener {
         Trace.endSection();
     }
 
-    private Expression lastDetectedExpression;
+    private long[] expressionWeight = new long[7];
 
     public Expression getLastDetectedExpression () {
-        return lastDetectedExpression;
+        long max = 0;
+        int maxOrdinal = 0;
+        for (int i = 0; i < 7; i++) {
+            if (expressionWeight[i] > max) {
+                max = expressionWeight[i];
+                maxOrdinal = i;
+            }
+            expressionWeight[i] = 0;
+        }
+        return Expression.values()[maxOrdinal];
     }
 
     private double[] shiftedX = new double[68];
