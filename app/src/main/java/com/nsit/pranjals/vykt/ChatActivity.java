@@ -565,6 +565,8 @@ public class ChatActivity extends AppCompatActivity implements
                 }
         );
 
+        receiver = getIntent().getStringExtra(Connection.RECEIVER_TAG);
+
         findViewById(R.id.button_back).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -639,6 +641,7 @@ public class ChatActivity extends AppCompatActivity implements
     private ArrayList<Message> messages;
     private ChatListAdapter chatListAdapter;
     private TextView etMessage;
+    private String receiver;
 
     private void initChat () {
         messages = new ArrayList<>();
@@ -662,7 +665,7 @@ public class ChatActivity extends AppCompatActivity implements
         Message message = new Message(
                 System.currentTimeMillis() + (330L * 60L * 1000L),
                 App.userId,
-                App.userId,
+                receiver,
                 Message.MessageType.SEND_REQUEST,
                 messageText,
                 mOnGetPreviewListener.getLastDetectedExpression()
