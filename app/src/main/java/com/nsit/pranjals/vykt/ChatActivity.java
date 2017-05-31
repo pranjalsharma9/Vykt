@@ -666,6 +666,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "you",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Hey! You there?",
                         Expression.SADNESS
                 )
@@ -674,6 +676,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495984400,
                         "Pranjal Verma",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "What happened? You look sad.",
                         Expression.NEUTRAL
                 )
@@ -682,6 +686,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495985500,
                         "you",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Someone put a long scratch on your car",
                         Expression.SADNESS
                 )
@@ -690,6 +696,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495986690,
                         "Pranjal Verma",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "What?",
                         Expression.DISGUST
                 )
@@ -698,6 +706,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495986700,
                         "Pranjal Verma",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Who would do that!",
                         Expression.DISGUST
                 )
@@ -706,6 +716,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495988900,
                         "you",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Just kidding... LOL",
                         Expression.HAPPINESS
                 )
@@ -714,6 +726,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495990000,
                         "Pranjal Verma",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Come on!\nWhy do you have to do this????!",
                         Expression.ANGER
                 )
@@ -722,6 +736,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495992380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -730,6 +746,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -738,6 +756,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -746,6 +766,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -754,6 +776,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -762,6 +786,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -770,6 +796,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -778,6 +806,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )
@@ -786,6 +816,8 @@ public class ChatActivity extends AppCompatActivity {
                 new Message(
                         1495983380,
                         "sender name",
+                        "Pranjal Verma",
+                        Message.MessageType.SEND_REQUEST,
                         "Sample message",
                         Expression.NEUTRAL
                 )

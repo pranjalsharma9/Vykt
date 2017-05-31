@@ -1,14 +1,18 @@
 package com.nsit.pranjals.vykt;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+
+import com.nsit.pranjals.vykt.models.Message;
+import com.nsit.pranjals.vykt.network.Connection;
 
 /**
  * Chat Selection Screen.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        Connection.OnConnectionChangeListener {
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -24,9 +28,7 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.sample_text);
         tv.setText(stringFromJNI());
 
-        // Remove on addition of actual code.
-        startActivity(new Intent(this, ChatActivity.class));
-        finish();
+        Connection.connectToServerAsync(this);
 
     }
 
@@ -35,4 +37,20 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+    @Override
+    public void wasServerConnected(boolean result) {
+        Connection.fetchClientList(this);
+    }
+
+    @Override
+    public void onClientListFetched (String[] clients) {
+        Log.v("vykt27", "clients length : " + clients.length);
+    }
+
+    @Override
+    public void onMessageReceived(Message message) {
+
+    }
+
 }
