@@ -96,6 +96,7 @@
         </RelativeLayout>
 
         <EditText
+            android:id="@+id/et_act_chat_message"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
@@ -111,6 +112,7 @@
             android:background="@drawable/bg_et_chat_box" />
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_act_chat_send"
             android:layout_width="@dimen/act_chat_send_fab_size"
             android:layout_height="@dimen/act_chat_send_fab_size"
             android:layout_marginEnd="@dimen/act_chat_send_fab_margin"

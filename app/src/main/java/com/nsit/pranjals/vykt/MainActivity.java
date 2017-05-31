@@ -1,5 +1,6 @@
 package com.nsit.pranjals.vykt;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,11 +47,18 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClientListFetched (String[] clients) {
         Log.v("vykt27", "clients length : " + clients.length);
+        startChatActivity();
     }
 
     @Override
     public void onMessageReceived(Message message) {
 
+    }
+
+    private void startChatActivity () {
+        Intent intent = new Intent(this, ChatActivity.class);
+        //intent.putExtra(Connection.RECEIVER_TAG, "dummy");
+        startActivity(intent);
     }
 
 }

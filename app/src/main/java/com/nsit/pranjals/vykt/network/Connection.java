@@ -20,6 +20,8 @@ import java.net.Socket;
 
 public class Connection {
 
+    public static final String RECEIVER_TAG = "receiver";
+
     private static String ipAddress = "192.168.0.103";
     private static final int SERVER_PORT_NUMBER = 11111;
     private static final int SO_TIMEOUT = 0;
@@ -27,6 +29,7 @@ public class Connection {
     private static ObjectInputStream in;
     private static ObjectOutputStream out;
     private static OnConnectionChangeListener listener;
+    private static OnConnectionChangeListener messageReceiver = null;
 
     //==============================================================================================
     //  ConnectTask
@@ -176,7 +179,14 @@ public class Connection {
             if (!connectToServer(listener))
                 return null;
             try {
-                out.writeObject(new Message(Message.MessageType.RECEIVE_REQUEST));
+                out.writeObject(new Message(
+                        0L,
+                        App.userId,
+                        App.userId,
+                        Message.MessageType.RECEIVE_REQUEST,
+                        "",
+                        Expression.NEUTRAL)
+                );
                 out.flush();
                 Message message;
                 while (true) {
@@ -198,10 +208,21 @@ public class Connection {
             }
         }
 
+        @Override
+        protected void onPostExecute (Void object) {
+            if (Connection.messageReceiver != null)
+                (new ReceiveTask(listener)).execute();
+        }
+
     }
 
     public static void receiveMessages (OnConnectionChangeListener listener) {
+        messageReceiver = listener;
         (new ReceiveTask(listener)).execute();
+    }
+
+    public static void stopReceivingMessages () {
+        messageReceiver = null;
     }
 
     //==============================================================================================

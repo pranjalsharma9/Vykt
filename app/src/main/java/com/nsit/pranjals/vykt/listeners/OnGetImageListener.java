@@ -271,6 +271,8 @@ public class OnGetImageListener implements OnImageAvailableListener {
 
                         final Expression detectedExpression = predict(results);
 
+                        lastDetectedExpression = detectedExpression;
+
                         // Draw on the featureView.
                         featureView.drawResults(results);
 
@@ -293,6 +295,12 @@ public class OnGetImageListener implements OnImageAvailableListener {
                 });
 
         Trace.endSection();
+    }
+
+    private Expression lastDetectedExpression;
+
+    public Expression getLastDetectedExpression () {
+        return lastDetectedExpression;
     }
 
     private double[] shiftedX = new double[68];

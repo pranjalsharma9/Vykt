@@ -75,4 +75,10 @@ public class Message implements Externalizable {
         expression = Expression.values()[in.readInt()];
     }
 
+    @Override
+    public String toString () {
+        return "time : " + timestamp + "\nfrom : " + sender + "\nto : " + receiver +
+                "\n" + text + "\nexpression : " + expression.toString() + "\ntype : " + type.toString();
+    }
+
 }

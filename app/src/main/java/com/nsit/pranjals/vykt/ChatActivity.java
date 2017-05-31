@@ -49,7 +49,9 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +60,7 @@ import com.nsit.pranjals.vykt.adapters.ChatListAdapter;
 import com.nsit.pranjals.vykt.enums.Expression;
 import com.nsit.pranjals.vykt.listeners.OnGetImageListener;
 import com.nsit.pranjals.vykt.models.Message;
+import com.nsit.pranjals.vykt.network.Connection;
 import com.nsit.pranjals.vykt.views.AutoFitTextureView;
 import com.nsit.pranjals.vykt.views.FeatureView;
 
@@ -71,7 +74,8 @@ import java.util.concurrent.TimeUnit;
 
 import hugo.weaving.DebugLog;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements
+        Connection.OnConnectionChangeListener {
 
     //==============================================================================================
     // PERMISSIONS AND RELATED STUFF!
@@ -597,6 +601,17 @@ public class ChatActivity extends AppCompatActivity {
         textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
         featureView = (FeatureView) findViewById(R.id.feature_view);
         tvExpressionView = (TextView) findViewById(R.id.tv_act_chat_expression);
+        etMessage = (EditText) findViewById(R.id.et_act_chat_message);
+
+        findViewById(R.id.button_act_chat_send).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onChatSendClicked();
+                    }
+                }
+        );
+
         initChat();
     }
 
@@ -613,12 +628,14 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             textureView.setSurfaceTextureListener(surfaceTextureListener);
         }
+        Connection.receiveMessages(this);
     }
 
     @Override
     public void onPause() {
         closeCamera();
         stopBackgroundThread();
+        Connection.stopReceivingMessages();
         super.onPause();
     }
 
@@ -658,6 +675,8 @@ public class ChatActivity extends AppCompatActivity {
     //==============================================================================================
 
     private ArrayList<Message> messages;
+    private ChatListAdapter chatListAdapter;
+    private TextView etMessage;
 
     private void initChat () {
         messages = new ArrayList<>();
@@ -823,8 +842,44 @@ public class ChatActivity extends AppCompatActivity {
                 )
         );
         ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
-        ChatListAdapter chatListAdapter = new ChatListAdapter(messages, chatList);
+        chatListAdapter = new ChatListAdapter(messages, chatList);
         chatList.setAdapter(chatListAdapter);
+    }
+
+    public void onChatSendClicked () {
+        String messageText = etMessage.getText().toString();
+        if (messageText.equals("")) {
+            return;
+        }
+        etMessage.setText("");
+        Connection.sendMessage(new Message(
+                System.currentTimeMillis() + (330L * 60L * 1000L),
+                App.userId,
+                App.userId,
+                Message.MessageType.SEND_REQUEST,
+                messageText,
+                mOnGetPreviewListener.getLastDetectedExpression()
+        ));
+    }
+
+    //==============================================================================================
+    // Networking.
+    //==============================================================================================
+
+    @Override
+    public void wasServerConnected(boolean result) {
+
+    }
+
+    @Override
+    public void onClientListFetched(String[] clients) {
+
+    }
+
+    @Override
+    public void onMessageReceived(Message message) {
+        messages.add(message);
+        chatListAdapter.notifyDataSetChanged();
     }
 
 }
