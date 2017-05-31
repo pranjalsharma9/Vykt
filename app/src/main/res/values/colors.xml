@@ -23,4 +23,12 @@
     <color name="act_chat_chat_bubble_header_text_color">#dd26a69a</color>
     <color name="act_chat_top_bar_title_color">#ccffffff</color>
     <color name="act_chat_tv_expression_bg_color">#99ffffff</color>
+
+    <!-- MainActivity colors -->
+    <color name="client_item_client_name_text_color">#cc000000</color>
+    <color name="client_item_client_id_text_color">#99000000</color>
+    <color name="client_item_bg_color">#66ffffff</color>
+    <color name="act_main_bottom_bar_et_bg_color">#aaf9a825</color>
+    <color name="act_main_bottom_bar_et_text_color">#ee000000</color>
+
 </resources>

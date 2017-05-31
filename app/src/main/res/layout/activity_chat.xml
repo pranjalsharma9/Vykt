@@ -41,6 +41,8 @@
         android:layout_above="@+id/act_chat_chat_box_container"
         android:padding="@dimen/act_chat_chat_list_padding"
         android:clipToPadding="false"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"
         android:divider="@android:color/transparent"
         android:dividerHeight="@dimen/act_chat_chat_list_divider_height" >
     </ListView>

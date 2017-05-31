@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ChatActivity Dimensions -->
     <dimen name="act_chat_chat_box_container_height">100dp</dimen>
     <dimen name="act_chat_chat_box_shadow_backdrop_height">109dp</dimen>
     <dimen name="act_chat_chat_box_padding">8dp</dimen>
@@ -22,5 +23,17 @@
     <dimen name="act_chat_top_bar_tv_title_padding">6dp</dimen>
     <dimen name="act_chat_chat_box_tv_expression_height">18dp</dimen>
     <dimen name="act_chat_chat_box_tv_expression_text_size">12sp</dimen>
+
+    <!-- MainActivity Dimensions -->
+    <dimen name="act_main_client_list_divider_height">8dp</dimen>
+    <dimen name="act_main_client_list_padding">8dp</dimen>
+    <dimen name="act_main_bottom_bar_height">48dp</dimen>
+    <dimen name="act_main_bottom_bar_button_size">48dp</dimen>
+    <dimen name="act_main_bottom_bar_shadow_backdrop_height">57dp</dimen>
+    <dimen name="act_main_bottom_bar_et_text_size">16sp</dimen>
+    <dimen name="act_main_bottom_bar_et_padding">12dp</dimen>
+    <dimen name="client_item_client_name_text_size">14sp</dimen>
+    <dimen name="client_item_client_id_text_size">12sp</dimen>
+    <dimen name="client_item_padding_unit">4dp</dimen>
 
 </resources>

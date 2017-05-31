@@ -72,7 +72,8 @@ public class ChatListAdapter extends BaseAdapter {
         } else {
             messageTime.setText("");
         }
-        messageSender.setText(message.sender);
+        String senderName = message.sender.split(":")[1];
+        messageSender.setText(senderName);
         messageContent.setText(message.text);
         messageExpression.setTextColor(message.expression.getColor());
         messageExpression.setText(message.expression.getStateString());

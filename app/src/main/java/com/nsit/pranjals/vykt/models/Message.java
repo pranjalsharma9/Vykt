@@ -77,8 +77,8 @@ public class Message implements Externalizable {
 
     @Override
     public String toString () {
-        return "time : " + timestamp + "\nfrom : " + sender + "\nto : " + receiver +
-                "\n" + text + "\nexpression : " + expression.toString() + "\ntype : " + type.toString();
+        return "time : " + timestamp + "\nfrom : " + sender + "\nto : " + receiver + "\n" + text +
+                "\nexpression : " + expression.toString() + "\ntype : " + type.toString();
     }
 
 }

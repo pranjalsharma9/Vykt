@@ -252,4 +252,8 @@ public class Connection {
         Connection.ipAddress = ipAddress;
     }
 
+    public static boolean isConnected () {
+        return (socket != null && socket.isConnected());
+    }
+
 }

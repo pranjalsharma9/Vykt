@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/act_chat_chat_box_padding"
+    android:background="@color/client_item_bg_color" >
+
+    <TextView
+        android:id="@+id/tv_client_name_client_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sample text"
+        android:textSize="@dimen/client_item_client_name_text_size"
+        android:textAlignment="textStart"
+        android:textColor="@color/client_item_client_name_text_color"
+        android:padding="@dimen/client_item_padding_unit" />
+
+    <TextView
+        android:id="@+id/tv_client_id_client_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sample text"
+        android:textSize="@dimen/client_item_client_id_text_size"
+        android:textAlignment="textStart"
+        android:textColor="@color/client_item_client_id_text_color"
+        android:padding="@dimen/client_item_padding_unit" />
+
+</LinearLayout>

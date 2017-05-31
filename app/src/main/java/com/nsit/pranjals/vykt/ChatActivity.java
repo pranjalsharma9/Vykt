@@ -18,7 +18,6 @@ package com.nsit.pranjals.vykt;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -36,7 +35,6 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -57,7 +55,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nsit.pranjals.vykt.adapters.ChatListAdapter;
-import com.nsit.pranjals.vykt.enums.Expression;
 import com.nsit.pranjals.vykt.listeners.OnGetImageListener;
 import com.nsit.pranjals.vykt.models.Message;
 import com.nsit.pranjals.vykt.network.Connection;
@@ -76,43 +73,6 @@ import hugo.weaving.DebugLog;
 
 public class ChatActivity extends AppCompatActivity implements
         Connection.OnConnectionChangeListener {
-
-    //==============================================================================================
-    // PERMISSIONS AND RELATED STUFF!
-    //==============================================================================================
-
-    private static String[] PERMISSIONS_REQ = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA
-    };
-
-    private static final int REQUEST_CODE_PERMISSION = 2;
-
-    // Function with code to verify permissions for camera and storage in a go!
-    private static boolean verifyPermissions(Activity activity) {
-        // Check if we have write permission
-        int write_permission = ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int read_permission = ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int camera_permission = ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.CAMERA);
-
-        if (    write_permission != PackageManager.PERMISSION_GRANTED
-                || read_permission != PackageManager.PERMISSION_GRANTED
-                || camera_permission != PackageManager.PERMISSION_GRANTED ) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_REQ,
-                    REQUEST_CODE_PERMISSION
-            );
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     //==============================================================================================
     // CAMERA STUFF!
@@ -591,13 +551,6 @@ public class ChatActivity extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_chat);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
-                verifyPermissions(this);
-            }
-        }
         textureView = (AutoFitTextureView) findViewById(R.id.camera_feed_texture_view);
         featureView = (FeatureView) findViewById(R.id.feature_view);
         tvExpressionView = (TextView) findViewById(R.id.tv_act_chat_expression);
@@ -608,6 +561,15 @@ public class ChatActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(View view) {
                         onChatSendClicked();
+                    }
+                }
+        );
+
+        findViewById(R.id.button_back).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ChatActivity.this.onBackPressed();
                     }
                 }
         );
@@ -680,170 +642,15 @@ public class ChatActivity extends AppCompatActivity implements
 
     private void initChat () {
         messages = new ArrayList<>();
-        //setting the adapters.
-        messages.add(
-                new Message(
-                        1495983380,
-                        "you",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Hey! You there?",
-                        Expression.SADNESS
-                )
-        );
-        messages.add(
-                new Message(
-                        1495984400,
-                        "Pranjal Verma",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "What happened? You look sad.",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495985500,
-                        "you",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Someone put a long scratch on your car",
-                        Expression.SADNESS
-                )
-        );
-        messages.add(
-                new Message(
-                        1495986690,
-                        "Pranjal Verma",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "What?",
-                        Expression.DISGUST
-                )
-        );
-        messages.add(
-                new Message(
-                        1495986700,
-                        "Pranjal Verma",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Who would do that!",
-                        Expression.DISGUST
-                )
-        );
-        messages.add(
-                new Message(
-                        1495988900,
-                        "you",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Just kidding... LOL",
-                        Expression.HAPPINESS
-                )
-        );
-        messages.add(
-                new Message(
-                        1495990000,
-                        "Pranjal Verma",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Come on!\nWhy do you have to do this????!",
-                        Expression.ANGER
-                )
-        );
-        messages.add(
-                new Message(
-                        1495992380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
-        messages.add(
-                new Message(
-                        1495983380,
-                        "sender name",
-                        "Pranjal Verma",
-                        Message.MessageType.SEND_REQUEST,
-                        "Sample message",
-                        Expression.NEUTRAL
-                )
-        );
         ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
         chatListAdapter = new ChatListAdapter(messages, chatList);
         chatList.setAdapter(chatListAdapter);
+        chatList.smoothScrollToPosition(messages.size());
+    }
+
+    private void addMessageToChatList (Message message) {
+        messages.add(message);
+        chatListAdapter.notifyDataSetChanged();
     }
 
     public void onChatSendClicked () {
@@ -852,14 +659,16 @@ public class ChatActivity extends AppCompatActivity implements
             return;
         }
         etMessage.setText("");
-        Connection.sendMessage(new Message(
+        Message message = new Message(
                 System.currentTimeMillis() + (330L * 60L * 1000L),
                 App.userId,
                 App.userId,
                 Message.MessageType.SEND_REQUEST,
                 messageText,
                 mOnGetPreviewListener.getLastDetectedExpression()
-        ));
+        );
+        Connection.sendMessage(message);
+        addMessageToChatList(message);
     }
 
     //==============================================================================================
@@ -878,8 +687,7 @@ public class ChatActivity extends AppCompatActivity implements
 
     @Override
     public void onMessageReceived(Message message) {
-        messages.add(message);
-        chatListAdapter.notifyDataSetChanged();
+        addMessageToChatList(message);
     }
 
 }

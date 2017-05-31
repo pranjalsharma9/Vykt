@@ -3,12 +3,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nsit.pranjals.vykt.MainActivity">
+    tools:context="com.nsit.pranjals.vykt.MainActivity"
+    android:background="@drawable/bg_act_main">
 
-    <TextView
-        android:id="@+id/sample_text"
+    <RelativeLayout
+        android:id="@+id/act_main_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/act_main_bottom_bar_height"
+        android:layout_alignParentBottom="true">
+
+        <ImageButton
+            android:id="@+id/button_act_main_bottom_bar"
+            android:layout_width="@dimen/act_main_bottom_bar_button_size"
+            android:layout_height="@dimen/act_main_bottom_bar_button_size"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_computer_black_24dp"
+            android:tint="#ffffff"
+            android:background="@color/act_main_bottom_bar_et_bg_color" />
+
+        <EditText
+            android:id="@+id/et_act_main_bottom_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/act_main_bottom_bar_et_padding"
+            android:paddingEnd="@dimen/act_main_bottom_bar_et_padding"
+            android:textSize="@dimen/act_main_bottom_bar_et_text_size"
+            android:textColor="@color/act_main_bottom_bar_et_text_color"
+            android:gravity="center_vertical"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/button_act_main_bottom_bar"
+            android:background="@drawable/bg_et_chat_box"/>
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/client_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello World!" />
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/act_main_bottom_bar"
+        android:padding="@dimen/act_main_client_list_padding"
+        android:clipToPadding="false"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/act_main_client_list_divider_height" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/act_main_bottom_bar_shadow_backdrop_height"
+        android:background="@drawable/shadow_bottom_bar"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.75" />
 
 </RelativeLayout>
