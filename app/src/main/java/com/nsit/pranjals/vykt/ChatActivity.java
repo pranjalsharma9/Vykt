@@ -646,9 +646,10 @@ public class ChatActivity extends AppCompatActivity implements
     private void initChat () {
         messages = new ArrayList<>();
         ListView chatList = (ListView) findViewById(R.id.act_chat_chat_list);
-        chatListAdapter = new ChatListAdapter(messages, chatList);
+        chatListAdapter = new ChatListAdapter(messages);
         chatList.setAdapter(chatListAdapter);
         chatList.smoothScrollToPosition(messages.size());
+        ((TextView) findViewById(R.id.act_chat_title)).setText(receiver.split(":")[1]);
     }
 
     private void addMessageToChatList (Message message) {

@@ -5,9 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nsit.pranjals.vykt.App;
 import com.nsit.pranjals.vykt.R;
 import com.nsit.pranjals.vykt.models.Message;
 
@@ -22,13 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 public class ChatListAdapter extends BaseAdapter {
 
-    public ArrayList<Message> messages;
-    public ListView parentListView;
+    private ArrayList<Message> messages;
 
-    public ChatListAdapter(ArrayList<Message> messages, ListView parentListView) {
+    public ChatListAdapter(ArrayList<Message> messages) {
         super();
         this.messages = messages;
-        this.parentListView = parentListView;
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ChatListAdapter extends BaseAdapter {
         background.setTint(message.expression.getBgColor());
         wrapperView.setBackground(background);
 
-        if (message.sender.equals("you")) {
+        if (message.sender.equals(App.userId)) {
             view.setPadding(100, 0, 0, 0);
         } else {
             view.setPadding(0, 0, 100, 0);
@@ -90,9 +88,5 @@ public class ChatListAdapter extends BaseAdapter {
 
         // returns the view for the current row
         return view;
-    }
-
-    public ListView getParentListView () {
-        return parentListView;
     }
 }

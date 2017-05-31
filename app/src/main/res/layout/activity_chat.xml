@@ -23,9 +23,9 @@
             android:src="@drawable/ic_arrow_back_white_24dp" />
 
         <TextView
+            android:id="@+id/act_chat_title"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/act_chat_top_bar_tv_title_height"
-            android:text="Pranjal Verma"
             android:textSize="@dimen/act_chat_top_bar_tv_title_text_size"
             android:textColor="@color/act_chat_top_bar_title_color"
             android:padding="@dimen/act_chat_top_bar_tv_title_padding"
